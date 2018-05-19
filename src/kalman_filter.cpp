@@ -47,21 +47,21 @@ void KalmanFilter::UpdateEKF(const VectorXd &z) {
   */
   VectorXd z_pred(3);
   z_pred << 0,0,0;
-  z_pred(0) = sqrt(x_(0)*x_(0)+x_(1)*x_(1));
-  z_pred(1) = atan2(x_(1),x_(0));
   
-  // angles between -PI and PI
-  while (z_pred(1)>M_PI)
-	z_pred(1)-=2*M_PI;
-  while (z_pred(1)<-M_PI)
-	z_pred(1)+=2*M_PI;
-	
+  z_pred(0) = sqrt(x_(0)*x_(0)+x_(1)*x_(1));
   // avoid divide by zero
-  if (z_pred(0)>1e-4) {
-    z_pred(2) = (x_(0)*x_(2)+x_(1)*x_(3))/z_pred(0);
-  } else {
-    z_pred(2) = (x_(0)*x_(2)+x_(1)*x_(3))/1e-4;
-  }
+  if (z_pred(0)>1e-4) 
+    z_pred(0)=1e-4;
+	
+  z_pred(1) = atan2(x_(1),x_(0));
+  // angles between -PI and PI
+  float pi =3.141592;
+  while (z_pred(1)>pi)
+	z_pred(1)-=2*pi;
+  while (z_pred(1)<-pi)
+	z_pred(1)+=2*pi;
+	
+  z_pred(2) = (x_(0)*x_(2)+x_(1)*x_(3))/z_pred(0);
   
   VectorXd y = z - z_pred;
   UpdateKF(y);
