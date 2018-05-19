@@ -58,6 +58,10 @@ FusionEKF::FusionEKF() {
              0, 0, 1000, 0,
              0, 0, 0, 1000;
   
+  // noise definition
+  noise_ax = 9;
+  float noise_ay = 9;
+  
 }
 
 /**
@@ -82,21 +86,16 @@ void FusionEKF::ProcessMeasurement(const MeasurementPackage &measurement_pack) {
     cout << "EKF: " << endl;
     ekf_.x_ = VectorXd(4);
     ekf_.x_ << 1, 1, 1, 1;
-	// noise definition
-	float noise_ax = 9;
-	float noise_ay = 9;
-  
-	// class for Jacobian calculation
-	Tools too;
+
 
     if (measurement_pack.sensor_type_ == MeasurementPackage::RADAR) {
       /**
       Convert radar from polar to cartesian coordinates and initialize state.
       */
-	  float px = measurement_pack.raw_measurements_[0]*measurement_pack.raw_measurements_[1].cos();
-	  float py = measurement_pack.raw_measurements_[0]*measurement_pack.raw_measurements_[1].sin();
-	  float vx = measurement_pack.raw_measurements_[2]*measurement_pack.raw_measurements_[1].cos();
-	  float vy = measurement_pack.raw_measurements_[2]*measurement_pack.raw_measurements_[1].sin();
+	  float px = measurement_pack.raw_measurements_[0]*cos(measurement_pack.raw_measurements_[1]);
+	  float py = measurement_pack.raw_measurements_[0]*sin(measurement_pack.raw_measurements_[1]);
+	  float vx = measurement_pack.raw_measurements_[2]*cos(measurement_pack.raw_measurements_[1]);
+	  float vy = measurement_pack.raw_measurements_[2]*sin(measurement_pack.raw_measurements_[1]);
 	  ekf_.x_ << px, py, vx, vy;
     }
     else if (measurement_pack.sensor_type_ == MeasurementPackage::LASER) {
@@ -153,7 +152,7 @@ void FusionEKF::ProcessMeasurement(const MeasurementPackage &measurement_pack) {
 
   if (measurement_pack.sensor_type_ == MeasurementPackage::RADAR) {
     // Radar updates
-    Hj_ = too.CalculateJacobian(ekf_.x_);
+    Hj_ = tools.CalculateJacobian(ekf_.x_);
     ekf_.H_ = Hj_;
     ekf_.R_ = R_radar_;
     ekf_.UpdateEKF(measurement_pack.raw_measurements_);
