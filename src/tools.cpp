@@ -63,7 +63,7 @@ MatrixXd Tools::CalculateJacobian(const VectorXd& x_state) {
   float c1 = px*px+py*py;
   //check division by zero
   if(c1 < 1e-4){
-  	c1 = 1e-4
+  	c1 = 1e-4;
   }
   float c2 = sqrt(c1);
   float c3 = (c1*c2);
