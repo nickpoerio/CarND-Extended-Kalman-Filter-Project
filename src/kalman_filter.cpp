@@ -1,5 +1,4 @@
 #include "kalman_filter.h"
-#include <math.h>
 
 using Eigen::MatrixXd;
 using Eigen::VectorXd;
@@ -31,22 +30,14 @@ void KalmanFilter::Predict() {
   P_ = F_ * P_ * Ft + Q_;
 }
 
-void KalmanFilter::Update(const VectorXd &z) {
+void KalmanFilter::UpdateLKF(const VectorXd &z) {
   /**
   TODO:
     * update the state by using Kalman Filter equations
   */
   VectorXd z_pred = H_ * x_;
   VectorXd y = z - z_pred;
-  MatrixXd Ht = H_.transpose();
-  MatrixXd S = H_ * P_ * Ht + R_;
-  MatrixXd Si = S.inverse();
-  MatrixXd PHt = P_ * Ht;
-  MatrixXd K = PHt * Si;
-  
-  //new estimate
-  x_ = x_ + (K * y);
-  P_ = (I_ - K * H_) * P_;
+  UpdateKF(y);
 }
 
 void KalmanFilter::UpdateEKF(const VectorXd &z) {
@@ -54,19 +45,31 @@ void KalmanFilter::UpdateEKF(const VectorXd &z) {
   TODO:
     * update the state by using Extended Kalman Filter equations
   */
-  VectorXd z_pred = VectorXd(3);
-  z_pred(0) = sqrt(pow(x_(0),2)+pow(x_(1),2));
+  VectorXd z_pred(3);
+  z_pred << 0,0,0;
+  z_pred(0) = sqrt(x_(0)*x_(0)+x_(1)*x_(1));
   z_pred(1) = atan2(x_(1),x_(0));
-  if (z_pred(0)>1e-4) 
-  {
+  
+  // angles between -PI and PI
+  while (z_pred(1)>M_PI)
+	z_pred(1)-=2*M_PI;
+  while (z_pred(1)<-M_PI)
+	z_pred(1)+=2*M_PI;
+	
+  // avoid divide by zero
+  if (z_pred(0)>1e-4) {
     z_pred(2) = (x_(0)*x_(2)+x_(1)*x_(3))/z_pred(0);
-  }
-  else
-  {
-    z_pred(2) = 0;
+  } else {
+    z_pred(2) = (x_(0)*x_(2)+x_(1)*x_(3))/1e-4;
   }
   
   VectorXd y = z - z_pred;
+  UpdateKF(y);
+
+}
+
+void KalmanFilter::UpdateKF(const VectorXd &y) {
+
   MatrixXd Ht = H_.transpose();
   MatrixXd S = H_ * P_ * Ht + R_;
   MatrixXd Si = S.inverse();
@@ -76,4 +79,5 @@ void KalmanFilter::UpdateEKF(const VectorXd &z) {
   //new estimate
   x_ = x_ + (K * y);
   P_ = (I_ - K * H_) * P_;
-}
+ 
+ }
