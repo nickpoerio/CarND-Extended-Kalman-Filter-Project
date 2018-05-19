@@ -60,7 +60,7 @@ FusionEKF::FusionEKF() {
   
   // noise definition
   noise_ax = 9;
-  float noise_ay = 9;
+  noise_ay = 9;
   
 }
 
