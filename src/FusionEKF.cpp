@@ -58,13 +58,6 @@ FusionEKF::FusionEKF() {
              0, 0, 1000, 0,
              0, 0, 0, 1000;
   
-  // noise definition
-  float noise_ax = 9;
-  float noise_ay = 9;
-  
-  // class for Jacobian calculation
-  Tools too;
-  
 }
 
 /**
@@ -89,6 +82,12 @@ void FusionEKF::ProcessMeasurement(const MeasurementPackage &measurement_pack) {
     cout << "EKF: " << endl;
     ekf_.x_ = VectorXd(4);
     ekf_.x_ << 1, 1, 1, 1;
+	// noise definition
+	float noise_ax = 9;
+	float noise_ay = 9;
+  
+	// class for Jacobian calculation
+	Tools too;
 
     if (measurement_pack.sensor_type_ == MeasurementPackage::RADAR) {
       /**
