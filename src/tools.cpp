@@ -63,10 +63,11 @@ MatrixXd Tools::CalculateJacobian(const VectorXd& x_state) {
   //pre-compute a set of terms to avoid repeated calculation
   
   //check division by zero
-  if (fabs(px)<EPS && fabs(py)<EPS){
+  if (fabs(px)<EPS)
 	  px=EPS*copysign(1,px);
+  if (fabs(py)<EPS)
 	  py=EPS*copysign(1,py);
-  }
+
   float c1 = px*px+py*py;
   float c2 = sqrt(c1);
   float c3 = (c1*c2);
