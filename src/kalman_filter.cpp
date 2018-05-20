@@ -50,8 +50,10 @@ void KalmanFilter::UpdateEKF(const VectorXd &z) {
   
   //avoid division by zero
   if (fabs(x_(0))<EPS && fabs(x_(1))<EPS){
-	  x_(0)=EPS*copysign(1,x_(0));
-	  x_(1)=EPS*copysign(1,x_(1));
+	  //x_(0)=EPS*copysign(1,x_(0));
+	  //x_(1)=EPS*copysign(1,x_(1));
+	  x_(0)+=1e-3;
+	  x_(1)+=1e-3;
   }
   
   z_pred(0) = sqrt(x_(0)*x_(0)+x_(1)*x_(1));
