@@ -58,13 +58,16 @@ FusionEKF::FusionEKF() {
              0, 0, 1000, 0,
              0, 0, 0, 1000;
 
- //the identity matrix I
+  //the identity matrix I
   ekf_.I_ = MatrixXd(4, 4);
   ekf_.I_ << 1, 0, 0, 0,
              0, 1, 0, 0,
              0, 0, 1, 0,
              0, 0, 0, 1;
   
+  // noise definition
+  noise_ax = 9.0;
+  noise_ay = 9.0;
 }
 
 /**
@@ -127,27 +130,22 @@ void FusionEKF::ProcessMeasurement(const MeasurementPackage &measurement_pack) {
   float dt = (measurement_pack.timestamp_ - previous_timestamp_) / 1000000.0;	//dt - expressed in seconds
   previous_timestamp_ = measurement_pack.timestamp_;
   
-  if( dt > 0. ) {
-    float dt_2 = dt * dt;
-    float dt_3_2 = dt_2 * dt/2;
-    float dt_4_4 = dt_3_2 * dt/2;
-       
-    //Modify the F matrix so that the time is integrated
-    ekf_.F_(0, 2) = dt;
-    ekf_.F_(1, 3) = dt;
-    
-	// noise definition
-    float noise_ax = 9.0;
-    float noise_ay = 9.0;
-    //set the process covariance matrix Q
-    ekf_.Q_ = MatrixXd(4, 4);
-    ekf_.Q_ <<  dt_4_4*noise_ax, 0, dt_3_2*noise_ax, 0,
-    		   0, dt_4_4*noise_ay, 0, dt_3_2*noise_ay,
-    		   dt_3_2*noise_ax, 0, dt_2*noise_ax, 0,
-    		   0, dt_3_2*noise_ay, 0, dt_2*noise_ay;
-       
-    ekf_.Predict();
-  }
+  float dt_2 = dt * dt;
+  float dt_3_2 = dt_2 * dt/2;
+  float dt_4_4 = dt_3_2 * dt/2;
+     
+  //Modify the F matrix so that the time is integrated
+  ekf_.F_(0, 2) = dt;
+  ekf_.F_(1, 3) = dt;
+  
+  //set the process covariance matrix Q
+  ekf_.Q_ = MatrixXd(4, 4);
+  ekf_.Q_ <<  dt_4_4*noise_ax, 0, dt_3_2*noise_ax, 0,
+  		   0, dt_4_4*noise_ay, 0, dt_3_2*noise_ay,
+  		   dt_3_2*noise_ax, 0, dt_2*noise_ax, 0,
+  		   0, dt_3_2*noise_ay, 0, dt_2*noise_ay;
+     
+  ekf_.Predict();
 
   /*****************************************************************************
    *  Update
@@ -161,7 +159,6 @@ void FusionEKF::ProcessMeasurement(const MeasurementPackage &measurement_pack) {
 
   if (measurement_pack.sensor_type_ == MeasurementPackage::RADAR) {
     // Radar updates
-	Tools tools;
     Hj_ = tools.CalculateJacobian(ekf_.x_);
     ekf_.H_ = Hj_;
     ekf_.R_ = R_radar_;

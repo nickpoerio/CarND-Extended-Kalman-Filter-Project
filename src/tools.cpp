@@ -1,5 +1,6 @@
 #include <iostream>
 #include "tools.h"
+#define EPS 1e-4
 
 using Eigen::VectorXd;
 using Eigen::MatrixXd;
@@ -60,11 +61,13 @@ MatrixXd Tools::CalculateJacobian(const VectorXd& x_state) {
   float vy = x_state(3);
 
   //pre-compute a set of terms to avoid repeated calculation
-  float c1 = px*px+py*py;
+  
   //check division by zero
-  if(c1 < 1e-4){
-  	c1 = 1e-4;
+  if (fabs(px<EPS) && fabs(py<EPS)){
+	  px=EPS*copysign(1,px);
+	  py=EPS*copysign(1,py);
   }
+  float c1 = px*px+py*py;
   float c2 = sqrt(c1);
   float c3 = (c1*c2);
 
