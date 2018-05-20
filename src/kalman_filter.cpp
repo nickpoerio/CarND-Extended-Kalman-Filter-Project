@@ -1,5 +1,5 @@
 #include "kalman_filter.h"
-#define EPS 1e-5
+#define EPS 1e-2
 
 using Eigen::MatrixXd;
 using Eigen::VectorXd;
@@ -52,8 +52,7 @@ void KalmanFilter::UpdateEKF(const VectorXd &z) {
   if (fabs(x_(0))<EPS && fabs(x_(1))<EPS){
 	  //x_(0)=EPS*copysign(1,x_(0));
 	  //x_(1)=EPS*copysign(1,x_(1));
-	  x_(0)+=1e-3;
-	  x_(1)+=1e-3;
+	  return;
   }
   
   z_pred(0) = sqrt(x_(0)*x_(0)+x_(1)*x_(1));
