@@ -1,6 +1,6 @@
 #include <iostream>
 #include "tools.h"
-#define EPS 1e-2
+#define EPS 1
 
 using Eigen::VectorXd;
 using Eigen::MatrixXd;
