@@ -1,5 +1,5 @@
 #include "kalman_filter.h"
-#define EPS 1e-4
+#define EPS 1e-2
 
 using Eigen::MatrixXd;
 using Eigen::VectorXd;
