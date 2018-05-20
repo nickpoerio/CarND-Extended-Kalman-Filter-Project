@@ -1,5 +1,5 @@
 #include "kalman_filter.h"
-#define EPS 1e-1
+#define EPS 1
 
 using Eigen::MatrixXd;
 using Eigen::VectorXd;
@@ -49,15 +49,15 @@ void KalmanFilter::UpdateEKF(const VectorXd &z) {
   VectorXd z_pred(3);
   
   //avoid division by zero
-  if (fabs(x_(0))<EPS)
+  if (fabs(x_(0))<EPS && fabs(x_(1))<EPS){
 	  x_(0)=EPS*copysign(1,x_(0));
-  if (fabs(x_(1))<EPS)
 	  x_(1)=EPS*copysign(1,x_(1));
+  }
   
   z_pred(0) = sqrt(x_(0)*x_(0)+x_(1)*x_(1));
   z_pred(1) = atan2(x_(1),x_(0));
   z_pred(2) = (x_(0)*x_(2)+x_(1)*x_(3))/z_pred(0);
-  
+
   // angles between -PI and PI
   while (z_pred(1)>M_PI)
 	z_pred(1)-=2*M_PI;
