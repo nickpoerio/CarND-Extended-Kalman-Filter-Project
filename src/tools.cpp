@@ -63,7 +63,7 @@ MatrixXd Tools::CalculateJacobian(const VectorXd& x_state) {
   //pre-compute a set of terms to avoid repeated calculation
   
   //check division by zero
-  if (fabs(px<EPS) && fabs(py<EPS)){
+  if (fabs(px)<EPS && fabs(py)<EPS){
 	  px=EPS*copysign(1,px);
 	  py=EPS*copysign(1,py);
   }

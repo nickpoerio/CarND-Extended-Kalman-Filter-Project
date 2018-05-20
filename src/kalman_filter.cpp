@@ -49,7 +49,7 @@ void KalmanFilter::UpdateEKF(const VectorXd &z) {
   VectorXd z_pred(3);
   
   //avoid division by zero
-  if (fabs(x_(0)<EPS) && fabs(x_(1)<EPS)){
+  if (fabs(x_(0))<EPS && fabs(x_(1))<EPS){
 	  x_(0)=EPS*copysign(1,x_(0));
 	  x_(1)=EPS*copysign(1,x_(1));
   }
